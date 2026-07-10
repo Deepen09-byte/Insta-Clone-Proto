@@ -7,7 +7,7 @@ const imagekit = new imageKit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 })
 
-async function postController(req, res) {
+async function createPostController(req, res) {
 
   console.log(req.body, req.file);
 
@@ -16,7 +16,14 @@ async function postController(req, res) {
     return res.status(401).json({ message: "Unauthorized access" });
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  let decoded = null;
+
+  try{
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  }
+  catch(err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 
   console.log(decoded);
 
@@ -38,6 +45,32 @@ async function postController(req, res) {
   });
 }
 
+async function getPostController(req, res) {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized access" });
+  }
+
+  let decoded = null;
+
+  try{
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  }
+  catch(err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const userId = decoded.id;
+
+  const posts = await postModel.find({ userId: userId });
+
+  res.status(200).json({
+    message: "Posts retrieved successfully",
+    posts
+  });
+}
+
 module.exports = {
-  postController
+  createPostController,
+  getPostController
 };
