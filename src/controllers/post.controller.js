@@ -1,4 +1,5 @@
 const postModel = require("../models/post.model");
+const likeModel = require("../models/like.model");
 const imageKit = require("@imagekit/nodejs");
 const {toFile} = require("@imagekit/nodejs");
 const jwt = require("jsonwebtoken");
@@ -39,7 +40,28 @@ async function getPostController(req, res) {
   });
 }
 
+async function likePostController(req, res) {
+  const username = req.user.username;
+  const postId = req.params.postId;
+
+  const post = await postModel.findById(postId);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  const likeRecord = await likeModel.create({
+    post: postId,
+    user: username
+  });
+
+  res.status(201).json({
+    message: "Post liked successfully",
+    likeRecord
+  });
+}
+
 module.exports = {
   createPostController,
-  getPostController
+  getPostController,
+  likePostController
 };
