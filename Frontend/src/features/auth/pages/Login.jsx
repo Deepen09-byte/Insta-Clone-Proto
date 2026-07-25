@@ -1,5 +1,6 @@
 import React from 'react'
 import '../style/form.scss'
+import {Link} from 'react-router'
 
 
 
@@ -18,7 +19,8 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
                 <input type="text" name='username' id='username' placeholder='Enter Username'/>
                 <input type="password" name='password' id='password' placeholder='Enter Password'/>
-                <button>Login</button>
+                <button className='button primary-button'>Login</button>
+                <p>Don't have an account? <Link to={"/register"}>Create one.</Link></p>
             </form>
         </div>
     </main>
