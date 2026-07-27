@@ -13,7 +13,7 @@ const CreatePost = () => {
     const {handleCreatePost , loading} = usePost()
     const navigate = useNavigate()
 
-    function handleSubmit (e) {
+    async function handleSubmit (e) {
         e.preventDefault()
 
         const file = postImageInputRef.current.files[0]

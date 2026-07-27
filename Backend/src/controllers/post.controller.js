@@ -51,6 +51,7 @@ async function likePostController(req, res) {
     post: postId,
     user: username,
   });
+
   if (existingLike) {
     return res
       .status(400)
@@ -68,11 +69,36 @@ async function likePostController(req, res) {
   });
 }
 
+async function unlikePostController(req,res) {
+
+  const username = req.user.username;
+  const postId = req.params.postId;
+
+  const isLiked = await likeModel.findOne({
+    post: postId,
+    user: username,
+  });
+  
+  if (!isLiked) {
+    return res
+      .status(400)
+      .json({ message: "Post didn't like" });
+  }
+
+  await likeModel.findOneAndDelete({_id: isLiked._id})
+
+  return res.status(200).json ({
+    message:"Post unliked successfully."
+  })
+
+
+}
+
 async function getFeedController(req, res) {
 
   const user = req.user
 
-  const posts = await Promise.all((await postModel.find().populate("userId").lean())
+  const posts = await Promise.all((await postModel.find().sort({_id:-1}).populate("userId").lean())
 
   .map(async(post)=> {
 
@@ -98,4 +124,5 @@ module.exports = {
   getPostController,
   likePostController,
   getFeedController,
+  unlikePostController
 };
